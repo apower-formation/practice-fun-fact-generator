@@ -10,6 +10,14 @@
     button:hover { background: #1f5e3a; }
     #copy-btn { background: #555; margin-left: 8px; }
     #copy-btn:hover { background: #333; }
+    #fav-btn { background: #a0522d; margin-left: 8px; }
+    #fav-btn:hover { background: #7a3e22; }
+    #favorites { margin-top: 32px; text-align: left; }
+    #favorites h2 { color: #2a7d4f; font-size: 1em; text-transform: uppercase; letter-spacing: 0.05em; }
+    .fav-item { display: flex; align-items: flex-start; gap: 8px; background: #f0f7f4; border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: 0.95em; line-height: 1.5; }
+    .fav-item span { flex: 1; }
+    .remove-btn { background: none; border: none; color: #999; font-size: 1.1em; cursor: pointer; padding: 0; line-height: 1; flex-shrink: 0; }
+    .remove-btn:hover { color: #c0392b; background: none; }
   </style>
 </head>
 <body>
@@ -17,6 +25,8 @@
   <div id="fact-box">Click the button to get a fun fact!</div>
   <button onclick="showFact()">New Fact</button>
   <button id="copy-btn" onclick="copyFact()">Copy</button>
+  <button id="fav-btn" onclick="saveFavorite()">Save as Favorite</button>
+  <div id="favorites"></div>
 
   <script>
     const facts = [
@@ -30,6 +40,28 @@
     function showFact() {
       const random = Math.floor(Math.random() * facts.length);
       document.getElementById("fact-box").textContent = facts[random];
+    }
+
+    const favorites = [];
+
+    function saveFavorite() {
+      const text = document.getElementById("fact-box").textContent;
+      if (text === "Click the button to get a fun fact!" || favorites.includes(text)) return;
+      favorites.push(text);
+      renderFavorites();
+    }
+
+    function removeFavorite(index) {
+      favorites.splice(index, 1);
+      renderFavorites();
+    }
+
+    function renderFavorites() {
+      const container = document.getElementById("favorites");
+      if (favorites.length === 0) { container.innerHTML = ""; return; }
+      container.innerHTML = "<h2>Favorites</h2>" + favorites.map((f, i) =>
+        `<div class="fav-item"><span>${f}</span><button class="remove-btn" onclick="removeFavorite(${i})" title="Remove">✕</button></div>`
+      ).join("");
     }
 
     function copyFact() {
