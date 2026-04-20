@@ -8,12 +8,15 @@
     #fact-box { background: #f0f7f4; border-radius: 12px; padding: 24px; margin: 24px 0; font-size: 1.1em; line-height: 1.6; }
     button { background: #2a7d4f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1em; cursor: pointer; }
     button:hover { background: #1f5e3a; }
+    #copy-btn { background: #555; margin-left: 8px; }
+    #copy-btn:hover { background: #333; }
   </style>
 </head>
 <body>
   <h1>🧬 Biotech Fun Facts</h1>
   <div id="fact-box">Click the button to get a fun fact!</div>
   <button onclick="showFact()">New Fact</button>
+  <button id="copy-btn" onclick="copyFact()">Copy</button>
 
   <script>
     const facts = [
@@ -27,6 +30,16 @@
     function showFact() {
       const random = Math.floor(Math.random() * facts.length);
       document.getElementById("fact-box").textContent = facts[random];
+    }
+
+    function copyFact() {
+      const text = document.getElementById("fact-box").textContent;
+      if (text === "Click the button to get a fun fact!") return;
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById("copy-btn");
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = "Copy", 1500);
+      });
     }
   </script>
 </body>
