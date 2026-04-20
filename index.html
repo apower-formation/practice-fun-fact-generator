@@ -5,7 +5,9 @@
   <style>
     body { font-family: sans-serif; max-width: 500px; margin: 80px auto; text-align: center; }
     h1 { color: #2a7d4f; }
+    #category-select { font-size: 1em; padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 4px; cursor: pointer; }
     #fact-box { background: #f0f7f4; border-radius: 12px; padding: 24px; margin: 24px 0; font-size: 1.1em; line-height: 1.6; }
+    .category-label { font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.08em; color: #2a7d4f; font-weight: bold; margin-bottom: 16px; display: block; }
     button { background: #2a7d4f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1em; cursor: pointer; }
     button:hover { background: #1f5e3a; }
     #copy-btn { background: #555; margin-left: 8px; }
@@ -22,6 +24,12 @@
 </head>
 <body>
   <h1>🧬 Biotech Fun Facts</h1>
+  <select id="category-select" onchange="onCategoryChange()">
+    <option value="all">All Categories</option>
+    <option value="Genomics">Genomics</option>
+    <option value="Drug Discovery">Drug Discovery</option>
+    <option value="Medical History">Medical History</option>
+  </select>
   <div id="fact-box">Click the button to get a fun fact!</div>
   <button onclick="showFact()">New Fact</button>
   <button id="copy-btn" onclick="copyFact()">Copy</button>
@@ -29,24 +37,60 @@
   <div id="favorites"></div>
 
   <script>
-    const facts = [
-      "The human genome contains about 3 billion base pairs of DNA.",
-      "Penicillin, the world's first antibiotic, was discovered accidentally by Alexander Fleming in 1928.",
-      "CRISPR gene editing was first demonstrated in human cells in 2013.",
-      "The first genetically engineered drug approved by the FDA was human insulin in 1982.",
-      "mRNA vaccines, like those for COVID-19, teach your cells to make a protein that triggers an immune response."
-    ];
+    const facts = {
+      "Genomics": [
+        "The human genome contains about 3 billion base pairs of DNA.",
+        "CRISPR gene editing was first demonstrated in human cells in 2013.",
+        "Less than 2% of the human genome codes for proteins — the rest was once called 'junk DNA'.",
+        "The Human Genome Project, completed in 2003, took 13 years and cost roughly $3 billion."
+      ],
+      "Drug Discovery": [
+        "The first genetically engineered drug approved by the FDA was human insulin in 1982.",
+        "mRNA vaccines, like those for COVID-19, teach your cells to make a protein that triggers an immune response.",
+        "On average, it takes over 10 years and $2 billion to bring a new drug to market.",
+        "Combinatorial chemistry, introduced in the 1990s, allowed scientists to synthesize thousands of compounds at once to speed up drug screening."
+      ],
+      "Medical History": [
+        "Penicillin, the world's first antibiotic, was discovered accidentally by Alexander Fleming in 1928.",
+        "The smallpox vaccine, developed by Edward Jenner in 1796, was the world's first vaccine.",
+        "Blood types (A, B, O) were discovered by Karl Landsteiner in 1901, making safe transfusions possible.",
+        "The first successful organ transplant — a kidney — was performed in 1954 by Dr. Joseph Murray."
+      ]
+    };
+
+    const PLACEHOLDER = "Click the button to get a fun fact!";
+
+    function getActiveFacts() {
+      const cat = document.getElementById("category-select").value;
+      return cat === "all" ? Object.values(facts).flat() : facts[cat];
+    }
+
+    function onCategoryChange() {
+      document.getElementById("fact-box").textContent = PLACEHOLDER;
+      document.querySelector(".category-label")?.remove();
+    }
 
     function showFact() {
-      const random = Math.floor(Math.random() * facts.length);
-      document.getElementById("fact-box").textContent = facts[random];
+      const pool = getActiveFacts();
+      const fact = pool[Math.floor(Math.random() * pool.length)];
+      document.getElementById("fact-box").textContent = fact;
+
+      const cat = document.getElementById("category-select").value;
+      let label = document.querySelector(".category-label");
+      if (cat === "all") {
+        const foundCat = Object.keys(facts).find(k => facts[k].includes(fact));
+        if (!label) { label = document.createElement("span"); label.className = "category-label"; document.getElementById("fact-box").prepend(label); }
+        label.textContent = foundCat;
+      } else if (label) {
+        label.remove();
+      }
     }
 
     const favorites = [];
 
     function saveFavorite() {
       const text = document.getElementById("fact-box").textContent;
-      if (text === "Click the button to get a fun fact!" || favorites.includes(text)) return;
+      if (text === PLACEHOLDER || favorites.includes(text)) return;
       favorites.push(text);
       renderFavorites();
     }
@@ -66,7 +110,7 @@
 
     function copyFact() {
       const text = document.getElementById("fact-box").textContent;
-      if (text === "Click the button to get a fun fact!") return;
+      if (text === PLACEHOLDER) return;
       navigator.clipboard.writeText(text).then(() => {
         const btn = document.getElementById("copy-btn");
         btn.textContent = "Copied!";
