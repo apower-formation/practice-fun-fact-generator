@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Biotech Fun Facts</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 80px auto; text-align: center; }
+    h1 { color: #2a7d4f; }
+    #fact-box { background: #f0f7f4; border-radius: 12px; padding: 24px; margin: 24px 0; font-size: 1.1em; line-height: 1.6; }
+    button { background: #2a7d4f; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 1em; cursor: pointer; }
+    button:hover { background: #1f5e3a; }
+  </style>
+</head>
+<body>
+  <h1>🧬 Biotech Fun Facts</h1>
+  <div id="fact-box">Click the button to get a fun fact!</div>
+  <button onclick="showFact()">New Fact</button>
+
+  <script>
+    const facts = [
+      "The human genome contains about 3 billion base pairs of DNA.",
+      "Penicillin, the world's first antibiotic, was discovered accidentally by Alexander Fleming in 1928.",
+      "CRISPR gene editing was first demonstrated in human cells in 2013.",
+      "The first genetically engineered drug approved by the FDA was human insulin in 1982.",
+      "mRNA vaccines, like those for COVID-19, teach your cells to make a protein that triggers an immune response."
+    ];
+
+    function showFact() {
+      const random = Math.floor(Math.random() * facts.length);
+      document.getElementById("fact-box").textContent = facts[random];
+    }
+  </script>
+</body>
+</html>
